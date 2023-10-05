@@ -1,18 +1,18 @@
 package com.example.repository.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Serdeable
 @Introspected
 @Builder
-public class HotelResponse {
-    @JsonProperty("quotation_id")
-    private long quotationId;
+public class QuotationListResponse {
+    private List<QuotationResponse> quotation;
 }

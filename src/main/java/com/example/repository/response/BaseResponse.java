@@ -1,12 +1,10 @@
 package com.example.repository.response;
 
-import com.example.repository.request.HotelRequest;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Setter
@@ -26,25 +24,20 @@ public class BaseResponse<T> {
         this.error = error;
     }
 
-    public BaseResponse(boolean success, List<HotelBookingResponse> data, ApiError error) {
+    public BaseResponse(boolean success, List<GetQuotationResponse> data, ApiError error) {
         this.success = success;
         this.data = (T) data;
         this.error = error;
     }
 
-    public BaseResponse(HotelResponse hotelResponse) {
+    public BaseResponse(CreateQuoteResponseDto hotelResponse) {
         this.success = success;
         this.data = (T) hotelResponse;
         this.error = error;
     }
-
-    public BaseResponse(Map<String, String> errorResponseMap) {
-        this.data= (T) errorResponseMap;
-    }
-
-    public BaseResponse(HotelBookingResponse hotelBookingResponse) {
-        this.success = success;
-        this.data = (T) hotelBookingResponse;
-        this.error = error;
+    public BaseResponse(QuotationResponse hotelResponse) {
+        this.error = null;
+        this.success = true;
+        this.data = (T) hotelResponse;
     }
 }

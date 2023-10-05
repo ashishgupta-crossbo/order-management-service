@@ -6,14 +6,15 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Serdeable
 @Builder
-@ToString
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 @Table(name = "hotel_booking",schema = "OMS")
 public class HotelBooking {
 

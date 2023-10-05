@@ -17,12 +17,4 @@ public class QuoteHelper {
         ApiError apiError = new ApiError(1001, "Something went wrong. Please try again in sometime.");
         return HttpResponse.badRequest(new BaseResponse<>(false, null, apiError));
     }
-
-    public HttpResponse<BaseResponse> createSuccessResponse(Object data) {
-        return HttpResponse.ok(new BaseResponse<>(true, data, null));
-    }
-
-    public HttpResponse<BaseResponse> createSuccessResponseForUpdate() {
-        return HttpResponse.ok(new BaseResponse<>(true, null, null));
-    }
 }

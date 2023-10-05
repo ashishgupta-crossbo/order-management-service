@@ -1,6 +1,6 @@
 package com.example.exceptionHander;
 
-import com.example.exceptions.RoomNotFoundException;
+import com.example.exceptions.CustomException;
 import com.example.repository.response.BaseResponse;
 import com.example.util.QuoteHelper;
 import io.micronaut.context.annotation.Requires;
@@ -14,8 +14,8 @@ import jakarta.inject.Singleton;
 
 @Produces
 @Singleton
-@Requires(classes = { RoomNotFoundException.class, ExceptionHandler.class })
-public class RoomNotFoundExceptionHandler implements ExceptionHandler<RoomNotFoundException, HttpResponse<BaseResponse>> {
+@Requires(classes = { CustomException.class, ExceptionHandler.class })
+public class RoomNotFoundExceptionHandler implements ExceptionHandler<CustomException, HttpResponse<BaseResponse>> {
 
     @Inject
     private final QuoteHelper quoteHelper;
@@ -25,7 +25,7 @@ public class RoomNotFoundExceptionHandler implements ExceptionHandler<RoomNotFou
     }
 
     @Override
-    public HttpResponse<BaseResponse> handle(HttpRequest request, RoomNotFoundException exception) {
+    public HttpResponse<BaseResponse> handle(HttpRequest request, CustomException exception) {
  HttpResponse<BaseResponse> baseResponse=quoteHelper.createErrorResponse();
         return HttpResponse.serverError(baseResponse).
                 status(HttpStatus.BAD_REQUEST).body();

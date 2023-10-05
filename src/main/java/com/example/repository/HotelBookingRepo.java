@@ -1,7 +1,7 @@
 package com.example.repository;
 
 import com.example.repository.model.HotelBooking;
-import com.example.repository.request.HotelBookingRequest;
+import com.example.repository.request.GetQuotationRequest;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
@@ -19,7 +19,7 @@ public interface HotelBookingRepo extends CrudRepository<HotelBooking, Long> {
     HotelBooking save(@NonNull HotelBooking hotel);
 
     @Query(value = "SELECT hb.id, hb.quotation_reference, hb.date_check_in, hb.date_check_out, hb.status FROM hotel_booking hb")
-    List<HotelBookingRequest> getQuatationList();
+    List<GetQuotationRequest> getQuatationList();
 
     @Join(value = "roomBookings", type = Join.Type.FETCH)
     @NonNull

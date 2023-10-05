@@ -15,7 +15,8 @@ import java.util.List;
 @Serdeable
 @Introspected
 @ToString
-public class HotelRequest {
+@Builder
+public class CreateQuoteRequest {
 
     @NotBlank(message = "Hotel code can not be null or empty")
     @JsonProperty("hotelCode")
@@ -43,4 +44,6 @@ public class HotelRequest {
     private String totalTaxAmount;
 
     private List<RoomRequest> requestRooms;
+
+
 }

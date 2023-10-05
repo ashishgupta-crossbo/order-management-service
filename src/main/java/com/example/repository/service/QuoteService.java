@@ -1,19 +1,16 @@
 package com.example.repository.service;
 
-import com.example.repository.request.HotelRequest;
-import com.example.repository.response.BaseResponse;
-import com.example.repository.response.HotelBookingResponse;
-import com.example.repository.response.HotelResponse;
-import io.micronaut.http.HttpResponse;
-
-import java.util.List;
+import com.example.repository.request.CreateQuoteRequest;
+import com.example.repository.response.getQuotationReqestList;
+import com.example.repository.response.CreateQuoteResponseDto;
+import com.example.repository.response.QuotationResponse;
 
 public interface QuoteService {
-    HotelResponse createQuote(HotelRequest hotelRequest);
+    CreateQuoteResponseDto createQuote(CreateQuoteRequest hotelRequest);
 
-    HotelBookingResponse  getQuotations();
+   getQuotationReqestList getQuotations();
 
-    HttpResponse<BaseResponse> getQuatationById(long id);
+    QuotationResponse getQuatationById(long id);
 
-    HttpResponse<BaseResponse> updateQuote(long id , HotelRequest hotelRequest);
+  void updateQuote(long id , CreateQuoteRequest hotelRequest);
 }

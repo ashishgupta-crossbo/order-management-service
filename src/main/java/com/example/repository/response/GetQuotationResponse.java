@@ -1,9 +1,8 @@
 package com.example.repository.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -11,17 +10,21 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Serdeable
-public class HotelBookingResponse {
+public class GetQuotationResponse {
+
+    @JsonProperty("quotation_id")
     private long id;
+
+    @JsonProperty("date_check_in")
     private String dateCheckIn;
+
+    @JsonProperty("date_check_out")
     private String dateCheckOut;
+
+    @JsonProperty("status")
     private String status;
+
+    @JsonProperty("quotation_ref")
     private String reference;
-    private List<RoomBookingDTO> bookingResponses;
-    private BaseResponse baseResponse;
 
-
-    public HotelBookingResponse(BaseResponse baseResponse) {
-        this.baseResponse = baseResponse;
-    }
 }

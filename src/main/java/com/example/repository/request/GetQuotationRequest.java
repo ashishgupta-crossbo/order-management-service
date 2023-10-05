@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Serdeable
 @Builder
-public class HotelBookingRequest {
+public class GetQuotationRequest {
     private long id;
     private String quotationReference;
     private String dateCheckIn;

@@ -52,7 +52,7 @@ public class HotelBooking {
     private String totalTaxAmount;
 
     @Column(name = "is_active")
-    private Boolean isActive=true;
+    private Boolean isActive;
 
     @Column(name = "status")
     private String status;

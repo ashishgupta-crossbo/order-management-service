@@ -1,16 +1,18 @@
 package com.example.repository.service;
 
-import com.example.repository.request.CreateQuoteRequest;
-import com.example.repository.response.getQuotationReqestList;
-import com.example.repository.response.CreateQuoteResponseDto;
-import com.example.repository.response.QuotationResponse;
+import com.example.dto.request.QuotationRequest;
+import com.example.dto.response.quote.QuotationResponseList;
+import com.example.dto.response.quote.QuotationResponseDto;
+import com.example.dto.response.quote.QuotationResponse;
 
 public interface QuoteService {
-    CreateQuoteResponseDto createQuote(CreateQuoteRequest hotelRequest);
+    QuotationResponseDto createQuote(QuotationRequest hotelRequest);
 
-   getQuotationReqestList getQuotations();
+   QuotationResponseList getQuotations();
 
     QuotationResponse getQuatationById(long id);
 
-  void updateQuote(long id , CreateQuoteRequest hotelRequest);
+  void updateQuote(long id , QuotationRequest hotelRequest);
+
+    void deleteQuote(long quoteId);
 }

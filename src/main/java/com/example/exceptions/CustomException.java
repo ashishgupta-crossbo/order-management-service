@@ -1,7 +1,7 @@
 package com.example.exceptions;
 
-import com.example.exceptionHander.AbstractException;
-import com.example.repository.common.ErrorCode;
+import com.example.exception.handler.AbstractException;
+import com.example.common.ErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 

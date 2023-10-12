@@ -1,29 +1,28 @@
 package com.example.repository.service.impl;
-
+import com.example.dto.response.quote.*;
 import com.example.exceptions.CustomException;
 import com.example.exceptions.ServerException;
-import com.example.repository.common.ErrorCode;
+import com.example.common.ErrorCode;
 import com.example.repository.model.HotelBooking;
 import com.example.repository.model.RoomBooking;
 import com.example.repository.HotelBookingRepo;
 import com.example.repository.RoomBookingRepo;
-import com.example.repository.request.GetQuotationRequest;
-import com.example.repository.request.CreateQuoteRequest;
-import com.example.repository.request.RoomRequest;
-import com.example.repository.response.*;
+import com.example.dto.request.GetQuotationRequest;
+import com.example.dto.request.QuotationRequest;
+import com.example.dto.request.RoomRequest;
 import com.example.repository.service.QuoteService;
-import com.example.validation.QuoteValidator;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Singleton
 public class QuoteServiceImpl implements QuoteService {
 
-    private static final Logger logger = Logger.getLogger(QuoteServiceImpl.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(QuoteServiceImpl.class.getName());
     private final HotelBookingRepo hotelBookingRepo;
     private final RoomBookingRepo roomBooking;
 
@@ -35,21 +34,22 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Transactional
     @Override
-    public CreateQuoteResponseDto createQuote(CreateQuoteRequest createQuoteRequest) {
+    public QuotationResponseDto createQuote(QuotationRequest quotationRequest) {
         HotelBooking hotel;
         try {
-            hotel = saveHotelBookings(createQuoteRequest, createQuoteRequest.getRequestRooms());
+            hotel = saveHotelBookings(quotationRequest);
         } catch (Exception e) {
-            logger.info("An error occurred while processing the request - {}");
+            logger.info("Getting error in createQuote function- {}",e.getMessage());
             throw new ServerException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-        return CreateQuoteResponseDto.builder()
+        return QuotationResponseDto.builder()
                 .quotationId(hotel.getId())
                 .build();
     }
 
     @Transactional
-    public HotelBooking saveHotelBookings(CreateQuoteRequest hotelRequest, List<RoomRequest> roomRequests) {
+    public HotelBooking saveHotelBookings(QuotationRequest hotelRequest) {
+        List<RoomRequest> roomRequests = hotelRequest.getRequestRooms();
         HotelBooking hotel = HotelBooking.builder()
                 .hotelCode(hotelRequest.getHotelCode())
                 .quotationReference(hotelRequest.getQuotationReference())
@@ -59,7 +59,7 @@ public class QuoteServiceImpl implements QuoteService {
                 .totalAmountBeforeTax(hotelRequest.getTotalAmountBeforeTax())
                 .totalAmountAfterTax(hotelRequest.getTotalAmountAfterTax())
                 .totalTaxAmount(hotelRequest.getTotalTaxAmount())
-                .isActive(true)
+                .isActive(false)
                 .status("OPEN")
                 .build();
         hotelBookingRepo.save(hotel);
@@ -81,15 +81,19 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    public getQuotationReqestList getQuotations() {
-        List<GetQuotationRequest> hotelBookings = hotelBookingRepo.getQuatationList();
+    public QuotationResponseList getQuotations() {
         List<GetQuotationResponse> quotationResponses = new ArrayList<>();
-
-        for (GetQuotationRequest booking : hotelBookings) {
-            GetQuotationResponse response = getAllQuotations(booking);
-            quotationResponses.add(response);
+        try {
+            List<GetQuotationRequest> hotelBookings = hotelBookingRepo.getQuatationList();
+            for (GetQuotationRequest booking : hotelBookings) {
+                GetQuotationResponse response = getAllQuotations(booking);
+                quotationResponses.add(response);
+            }
+        }catch (Exception e){
+            logger.info("Getting error in getQuotations function - {}",e.getMessage());
+            throw new ServerException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-        return new getQuotationReqestList(quotationResponses);
+        return new QuotationResponseList(quotationResponses);
     }
 
     private static GetQuotationResponse getAllQuotations(GetQuotationRequest booking) {
@@ -117,7 +121,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     private QuotationResponse createQuotationData(HotelBooking booking) {
-        List<RoomBookingDTO> roomBookingDTOs = new ArrayList<>();
+        List<RoomBookingDTO> roomBookingList = new ArrayList<>();
 
         assert booking.getRoomBookings() != null;
         for (RoomBooking roomBooking : booking.getRoomBookings()) {
@@ -128,9 +132,8 @@ public class QuoteServiceImpl implements QuoteService {
                     .childrenCount(roomBooking.getChildrenCount())
                     .ratePlanCode(roomBooking.getRatePlanCode())
                     .build();
-            roomBookingDTOs.add(roomBookingDTO);
+            roomBookingList.add(roomBookingDTO);
         }
-
         return QuotationResponse.builder()
                 .hotelCode(booking.getHotelCode())
                 .dateCheckIn(booking.getDateCheckIn())
@@ -140,14 +143,14 @@ public class QuoteServiceImpl implements QuoteService {
                 .totalAmountBeforeTax(booking.getTotalAmountBeforeTax())
                 .totalAmountAfterTax(booking.getTotalAmountAfterTax())
                 .totalTaxAmount(booking.getTotalTaxAmount())
-                .reqRooms(roomBookingDTOs)
+                .reqRooms(roomBookingList)
                 .build();
 
     }
 
     @Transactional
     @Override
-    public void updateQuote(long id, CreateQuoteRequest hotelRequest) {
+    public void updateQuote(long id, QuotationRequest hotelRequest) {
         Optional<HotelBooking> existingQuotation = hotelBookingRepo.findById(id);
         if (existingQuotation.isEmpty()) {
             throw new CustomException(ErrorCode.CUSTOM_EXCEPTION);
@@ -157,7 +160,7 @@ public class QuoteServiceImpl implements QuoteService {
                 hotelRequestToUpdate.getDateCheckIn(),hotelRequestToUpdate.getDateCheckOut(),hotelRequestToUpdate.getRatePlanCode());
     }
 
-    private static HotelBooking getHotelBooking(CreateQuoteRequest hotelRequest, Optional<HotelBooking> existingQuotation) {
+    private static HotelBooking getHotelBooking(QuotationRequest hotelRequest, Optional<HotelBooking> existingQuotation) {
         return HotelBooking.builder()
                 .hotelCode(hotelRequest.getHotelCode())
                 .quotationReference(hotelRequest.getQuotationReference())
@@ -167,4 +170,22 @@ public class QuoteServiceImpl implements QuoteService {
                 .roomBookings(existingQuotation.get().getRoomBookings())
                 .build();
     }
-}
+
+    @Override
+    public void deleteQuote(long quoteId) {
+        try {
+            Optional<HotelBooking> hotelBookingOptional = hotelBookingRepo.findById(quoteId);
+            if (hotelBookingOptional.isPresent()) {
+                HotelBooking hotelBooking = hotelBookingOptional.get();
+                hotelBookingRepo.updateIsActive(hotelBooking.getId());
+            } else {
+                throw new CustomException(ErrorCode.CUSTOM_EXCEPTION);
+            }
+        }catch (Exception e){
+            logger.info("Getting error in deleteQuote function {}",e.getMessage());
+            throw new CustomException(ErrorCode.CUSTOM_EXCEPTION);
+        }
+    }
+
+    }
+
